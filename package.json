@@ -1,0 +1,55 @@
+{
+  "name": "speech-care",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=24 <25",
+    "pnpm": ">=12 <13"
+  },
+  "packageManager": "pnpm@12.5.1",
+  "scripts": {
+    "dev": "next dev",
+    "dev:debug": "next dev --inspect",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "typecheck": "next typegen && tsc --noEmit",
+    "check": "pnpm lint && pnpm typecheck && pnpm format:check",
+    "fix": "pnpm lint:fix && pnpm format",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "next": "16.3.5",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@next/env": "16.3.5",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "16.3.5",
+    "eslint-config-prettier": "10.1.8",
+    "husky": "9.1.7",
+    "lint-staged": "17.5.1",
+    "prettier": "3.9.8",
+    "prettier-plugin-tailwindcss": "0.8.1",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,mjs,cjs}": [
+      "eslint",
+      "prettier --write"
+    ],
+    "*.{json,css,scss}": [
+      "prettier --write"
+    ]
+  }
+}
