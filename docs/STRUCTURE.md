@@ -2,6 +2,8 @@
 
 Цей документ описує правила організації коду в проєкті.
 
+Обов'язкові правила auth, браузерних API-запитів, кешу та SSR визначає [AUTH_FLOW.md](./AUTH_FLOW.md). Тут описано розміщення коду; альтернативний API-підхід не встановлюємо.
+
 ## Структура
 
 ```text
@@ -21,9 +23,9 @@
 │   │
 │   ├── modules/                  # Бізнес-домени / незалежні функціональні області
 │   │   └── <module>/
-│   │       ├── api/              # API-функції, Server Actions, fetchers модуля
+│   │       ├── api/              # Браузерні та server-only API-функції модуля
 │   │       ├── components/       # UI, специфічний тільки для цього модуля
-│   │       ├── hooks/            # Hooks модуля
+│   │       ├── hooks/            # Hooks модуля, зокрема React Query hooks
 │   │       ├── schemas/          # Zod-схеми та валідація
 │   │       ├── utils/            # Допоміжна логіка конкретного модуля
 │   │       │   ├── api/          # Перетворення API-даних
@@ -138,6 +140,19 @@ Module повинен максимально володіти своїм код�
 - generic utilities.
 
 `lib/` не повинен знати про конкретні business modules.
+
+### Розміщення BFF API
+
+| Шлях | Відповідальність |
+| --- | --- |
+| `src/app/api/**/route.ts` | HTTP boundary для браузера |
+| `src/lib/api/bff-api.ts` | Браузерний HTTP client `bffApi` для Next `/api/...` |
+| `src/lib/api/nest-api.ts` | Server-only HTTP client для NestJS |
+| `src/lib/api/`, `src/lib/auth/` | Спільна серверна API/auth infrastructure за конкретної потреби |
+| `src/modules/<feature>/api/` | API-функції конкретної функціональності |
+| `src/modules/<feature>/hooks/` | React Query hooks відповідної функціональності |
+
+Браузерні та серверні API-функції модуля розміщуємо в окремих файлах. Server-only залежності не потрапляють у клієнтські імпорти або змішані barrel exports. Server Actions не є API-шаром для Nest; правила викликів визначає [AUTH_FLOW.md](./AUTH_FLOW.md).
 
 ---
 
