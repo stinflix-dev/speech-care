@@ -19,7 +19,10 @@ export async function POST(request: Request) {
       return errorResponse(400, 'Перевірте дані для входу.')
     }
 
-    const result = await requestAuthCredentials('login', input.data)
+    const result = await requestAuthCredentials({
+      action: 'login',
+      input: input.data,
+    })
 
     if (!result.success) {
       const response = errorResponse(result.status, result.message)

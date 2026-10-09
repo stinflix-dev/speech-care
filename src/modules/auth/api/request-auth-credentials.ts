@@ -3,8 +3,8 @@ import 'server-only'
 import axios from 'axios'
 import { api } from '@/lib/api/nest-api'
 import {
-  authCredentialsSchema,
   type AuthCredentials,
+  authCredentialsSchema,
 } from '@/lib/auth/auth-credentials.schema'
 import type { LoginInput } from '../schemas/login.schema'
 import type { RegisterInput } from '../schemas/register.schema'
@@ -18,10 +18,14 @@ type AuthFailure = {
 
 type AuthResult = { success: true; data: AuthCredentials } | AuthFailure
 
-export async function requestAuthCredentials(
-  action: 'login' | 'register',
-  input: LoginInput | RegisterInput,
-): Promise<AuthResult> {
+type AuthInput =
+  | { action: 'login'; input: LoginInput }
+  | { action: 'register'; input: RegisterInput }
+
+export async function requestAuthCredentials({
+  input,
+  action,
+}: AuthInput): Promise<AuthResult> {
   const operation = `auth.${action}`
 
   try {

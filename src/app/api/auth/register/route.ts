@@ -19,7 +19,10 @@ export async function POST(request: Request) {
       return errorResponse(400, 'Перевірте дані для реєстрації.')
     }
 
-    const result = await requestAuthCredentials('register', input.data)
+    const result = await requestAuthCredentials({
+      action: 'register',
+      input: input.data,
+    })
 
     if (!result.success) {
       const response = errorResponse(result.status, result.message)
