@@ -4,8 +4,8 @@ import {
   successResponse,
 } from '@/lib/api/bff-http'
 import { setAuthCookies } from '@/lib/auth/auth-cookies'
-import { login } from '@/modules/auth/api/login'
 import { loginSchema } from '@/modules/auth/schemas/login.schema'
+import { requestAuthCredentials } from '@/modules/auth/api/request-auth-credentials'
 
 export async function POST(request: Request) {
   try {
@@ -19,7 +19,7 @@ export async function POST(request: Request) {
       return errorResponse(400, 'Перевірте дані для входу.')
     }
 
-    const result = await login(input.data)
+    const result = await requestAuthCredentials('login', input.data)
 
     if (!result.success) {
       const response = errorResponse(result.status, result.message)

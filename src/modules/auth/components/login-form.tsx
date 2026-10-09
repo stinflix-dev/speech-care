@@ -3,19 +3,16 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
-
 import { Button } from '@/components/ui/button'
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { bffApi } from '@/lib/api/bff-api'
-
-import {
-  loginSchema,
-  loginResponseSchema,
-  type LoginInput,
-} from '../schemas/login.schema'
+import { loginSchema, type LoginInput } from '../schemas/login.schema'
+import { useLogin } from '@/modules/auth/hooks/use-login'
+import { getErrorMessage } from '@/lib/errors/get-error-message'
 
 export function LoginForm() {
+  const login = useLogin()
+
   const {
     register,
     handleSubmit,
@@ -32,31 +29,15 @@ export function LoginForm() {
 
   async function onSubmit(input: LoginInput) {
     try {
-      const response = await bffApi.post<unknown>('/auth/login', input, {
-        validateStatus: () => true,
-      })
-
-      const result = loginResponseSchema.safeParse(response.data)
-
-      if (response.status === 200 && result.success && result.data.success) {
-        setValue('password', '')
-        return
-      }
-
-      const message =
-        response.status >= 400 && result.success && !result.data.success
-          ? result.data.message
-          : 'Отримано некоректну відповідь сервера.'
-
+      await login.mutateAsync(input)
+      setValue('password', '')
+    } catch (error) {
       setError('root.server', {
         type: 'server',
-        message,
+        message: getErrorMessage(error, 'Не вдалося увійти в акаунт'),
       })
-    } catch {
-      setError('root.server', {
-        type: 'network',
-        message: 'Не вдалося отримати відповідь сервера. Спробуйте пізніше.',
-      })
+    } finally {
+      login.reset()
     }
   }
 
@@ -81,7 +62,7 @@ export function LoginForm() {
             {...register('email')}
             id="login-email"
             type="email"
-            autoComplete="username"
+            autoComplete="email"
             readOnly={isSubmitting || isSubmitSuccessful}
             aria-invalid={Boolean(errors.email)}
             aria-describedby={errors.email ? 'login-email-error' : undefined}

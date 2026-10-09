@@ -3,10 +3,13 @@ import 'server-only'
 import { NextResponse } from 'next/server'
 import type { ApiResponse } from '@/types/api-types'
 
-export function successResponse<T>(data: T) {
+export function successResponse<T>(data: T, status = 200) {
   return NextResponse.json<ApiResponse<T>>(
     { success: true, data },
-    { headers: { 'Cache-Control': 'no-store' } },
+    {
+      status,
+      headers: { 'Cache-Control': 'no-store' },
+    },
   )
 }
 

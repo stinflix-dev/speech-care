@@ -1,35 +1,158 @@
-import { Field, FieldLabel } from '@/components/ui/field'
+'use client'
+
+import { Field, FieldLabel, FieldError } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import {
+  type RegisterInput,
+  registerSchema,
+} from '@/modules/auth/schemas/register.schema'
+import { useRegister } from '@/modules/auth/hooks/use-register'
+import { getErrorMessage } from '@/lib/errors/get-error-message'
 
 export const RegisterForm = () => {
+  const registration = useRegister()
+
+  const {
+    register,
+    handleSubmit,
+    setError,
+    setValue,
+    formState: { errors, isSubmitting, isSubmitSuccessful },
+  } = useForm<RegisterInput>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+    },
+  })
+
+  async function onSubmit(input: RegisterInput) {
+    try {
+      await registration.mutateAsync(input)
+      setValue('password', '')
+    } catch (error) {
+      setError('root.server', {
+        type: 'server',
+        message: getErrorMessage(error, 'Не вдалося виконати реєстрацію.'),
+      })
+    } finally {
+      registration.reset()
+    }
+  }
+
   return (
     <div className="flex flex-col gap-y-6 rounded-lg border border-gray-200 px-6 py-8 shadow-md">
       <h1 className="text-center text-2xl font-semibold text-gray-800">
         Створення облікового запису
       </h1>
-      <form className="flex flex-col gap-y-6">
+      <form
+        noValidate
+        onSubmit={(event) => {
+          void handleSubmit(onSubmit)(event)
+        }}
+        className="flex flex-col gap-y-6"
+        aria-busy={isSubmitting}
+      >
         <div className="flex items-center gap-x-6">
-          <Field>
-            <FieldLabel>Ім&#39;я</FieldLabel>
-            <Input type="text" required />
+          <Field data-invalid={Boolean(errors.firstName)}>
+            <FieldLabel htmlFor="register-first-name">Ім’я</FieldLabel>
+            <Input
+              {...register('firstName')}
+              id="register-first-name"
+              type="text"
+              autoComplete="given-name"
+              readOnly={isSubmitting || isSubmitSuccessful}
+              aria-invalid={Boolean(errors.firstName)}
+              aria-describedby={
+                errors.firstName ? 'register-first-name-error' : undefined
+              }
+            />
+            {errors.firstName && (
+              <FieldError id="register-first-name-error">
+                {errors.firstName.message}
+              </FieldError>
+            )}
           </Field>
-          <Field>
-            <FieldLabel>Прізвище</FieldLabel>
-            <Input type="text" required />
+
+          <Field data-invalid={Boolean(errors.lastName)}>
+            <FieldLabel htmlFor="register-last-name">Прізвище</FieldLabel>
+            <Input
+              {...register('lastName')}
+              id="register-last-name"
+              type="text"
+              autoComplete="family-name"
+              readOnly={isSubmitting || isSubmitSuccessful}
+              aria-invalid={Boolean(errors.lastName)}
+              aria-describedby={
+                errors.lastName ? 'register-last-name-error' : undefined
+              }
+            />
+            {errors.lastName && (
+              <FieldError id="register-last-name-error">
+                {errors.lastName.message}
+              </FieldError>
+            )}
           </Field>
         </div>
-        <Field>
-          <FieldLabel>Електронна пошта</FieldLabel>
-          <Input type="email" required />
+
+        <Field data-invalid={Boolean(errors.email)}>
+          <FieldLabel htmlFor="register-email">Електронна пошта</FieldLabel>
+          <Input
+            {...register('email')}
+            id="register-email"
+            type="email"
+            autoComplete="username"
+            readOnly={isSubmitting || isSubmitSuccessful}
+            aria-invalid={Boolean(errors.email)}
+            aria-describedby={errors.email ? 'register-email-error' : undefined}
+          />
+          {errors.email && (
+            <FieldError id="register-email-error">
+              {errors.email.message}
+            </FieldError>
+          )}
         </Field>
-        <Field>
-          <FieldLabel>Пароль</FieldLabel>
-          <Input type="password" required />
+
+        <Field data-invalid={Boolean(errors.password)}>
+          <FieldLabel htmlFor="register-password">Пароль</FieldLabel>
+          <Input
+            {...register('password')}
+            id="register-password"
+            type="password"
+            autoComplete="new-password"
+            readOnly={isSubmitting || isSubmitSuccessful}
+            aria-invalid={Boolean(errors.password)}
+            aria-describedby={
+              errors.password ? 'register-password-error' : undefined
+            }
+          />
+          {errors.password && (
+            <FieldError id="register-password-error">
+              {errors.password.message}
+            </FieldError>
+          )}
         </Field>
-        <Button className="mt-4" type="submit">
-          Зареєструватися hello
+
+        {errors.root?.server && (
+          <FieldError>{errors.root.server.message}</FieldError>
+        )}
+
+        {isSubmitSuccessful && (
+          <p role="status">Обліковий запис створено. Ви увійшли в систему.</p>
+        )}
+
+        <Button
+          className="mt-4"
+          type="submit"
+          disabled={isSubmitting || isSubmitSuccessful}
+        >
+          {isSubmitting ? 'Створюємо обліковий запис…' : 'Зареєструватися'}
         </Button>
       </form>
       <div>

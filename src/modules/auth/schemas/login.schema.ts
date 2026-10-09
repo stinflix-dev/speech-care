@@ -10,14 +10,3 @@ export const loginSchema = z.strictObject({
 })
 
 export type LoginInput = z.infer<typeof loginSchema>
-
-export const loginResponseSchema = z.discriminatedUnion('success', [
-  z.object({
-    success: z.literal(true),
-    data: z.null(),
-  }),
-  z.object({
-    success: z.literal(false),
-    message: z.string().min(1).max(500),
-  }),
-])
