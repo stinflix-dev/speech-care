@@ -1,7 +1,11 @@
-import { errorResponse, successResponse } from '@/lib/api/bff-http'
-import { api, MissingAccessTokenError } from '@/lib/api/nest-api'
+import {
+  errorResponse,
+  nestErrorResponse,
+  requestErrorResponse,
+  successResponse,
+} from '@/lib/api/bff-http'
+import { api } from '@/lib/api/nest-api'
 import { userSchema } from '@/modules/users/schemas/user.schema'
-import { nestErrorSchema } from '@/lib/api/nest-error.schema'
 
 export async function GET() {
   try {
@@ -10,20 +14,7 @@ export async function GET() {
     })
 
     if (response.status !== 200) {
-      const parsedError = nestErrorSchema.safeParse(response.data)
-
-      if (
-        !parsedError.success ||
-        parsedError.data.statusCode !== response.status
-      ) {
-        return errorResponse(502, 'Отримано некоректну відповідь сервісу.')
-      }
-
-      const message = Array.isArray(parsedError.data.message)
-        ? parsedError.data.message.join('; ')
-        : parsedError.data.message
-
-      return errorResponse(response.status, message)
+      return nestErrorResponse(response.status, response.data)
     }
 
     const validatedUser = userSchema.safeParse(response.data)
@@ -34,10 +25,9 @@ export async function GET() {
 
     return successResponse(validatedUser.data)
   } catch (error) {
-    if (error instanceof MissingAccessTokenError) {
-      return errorResponse(401, error.message)
-    }
-
-    return errorResponse(500, 'Не вдалося отримати інформацію про користувача.')
+    return requestErrorResponse(
+      error,
+      'Не вдалося отримати інформацію про користувача.',
+    )
   }
 }
