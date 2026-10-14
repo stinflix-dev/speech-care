@@ -1,5 +1,7 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+Project architecture: [AUTH_FLOW.md](./docs/AUTH_FLOW.md) defines the BFF/API policy, including the accepted error-handling refactor; [STRUCTURE.md](./docs/STRUCTURE.md) defines file placement. Current learning progress is recorded in the workspace [PROGRESS.md](../docs/learning/PROGRESS.md), rather than in this setup guide.
+
 ## Getting Started
 
 First, run the development server:

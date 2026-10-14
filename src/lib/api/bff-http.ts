@@ -25,48 +25,39 @@ export function errorResponse(status: number, message: string) {
   )
 }
 
-export function nestErrorResponse(status: number, data: unknown) {
-  let message: string | undefined
-
-  if (typeof data === 'object' && data !== null && 'message' in data) {
-    const value = data.message
-
-    if (typeof value === 'string' && value.trim()) {
-      message = value
-    } else if (
-      Array.isArray(value) &&
-      value.length > 0 &&
-      value.every((item) => typeof item === 'string' && item.trim())
-    ) {
-      message = value.join('; ')
-    }
-  }
-
-  if (status < 400 || status > 599 || !message) {
-    return errorResponse(502, 'Отримано некоректну відповідь сервісу.')
-  }
-
-  return errorResponse(status, message)
-}
-
-export function requestErrorResponse(error: unknown, fallbackMessage: string) {
+export function nestErrorResponse(error: unknown) {
   if (error instanceof MissingAccessTokenError) {
     return errorResponse(401, error.message)
   }
 
-  if (axios.isAxiosError(error)) {
-    if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
-      return errorResponse(504, 'Сервіс не відповів вчасно.')
-    }
+  if (!axios.isAxiosError(error)) {
+    return errorResponse(500, 'Внутрішня помилка сервера.')
+  }
 
-    if (error.response) {
-      return nestErrorResponse(error.response.status, error.response.data)
-    }
-
+  if (!error.response) {
     return errorResponse(502, 'Не вдалося отримати відповідь сервісу.')
   }
 
-  return errorResponse(500, fallbackMessage)
+  const { status } = error.response
+  const data: unknown = error.response.data
+
+  if (typeof data === 'object' && data !== null && 'message' in data) {
+    const value = data.message
+
+    const message =
+      typeof value === 'string'
+        ? value
+        : Array.isArray(value) &&
+            value.every((item) => typeof item === 'string')
+          ? value.join('; ')
+          : null
+
+    if (message?.trim()) {
+      return errorResponse(status, message)
+    }
+  }
+
+  return errorResponse(502, 'Отримано некоректну відповідь сервісу.')
 }
 
 type JsonRequestResult =

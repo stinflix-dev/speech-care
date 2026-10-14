@@ -148,6 +148,8 @@ Module повинен максимально володіти своїм код�
 | `src/app/api/**/route.ts` | HTTP boundary для браузера; перевірка запиту й контракту відповіді endpoint, HTTP-вихід |
 | `src/lib/api/bff-api.ts` | Браузерний HTTP client `bffApi` для Next `/api/...` |
 | `src/lib/api/nest-api.ts` | Server-only HTTP client для NestJS |
+| `src/lib/api/bff-http.ts` | Спільні HTTP helpers: `successResponse`, `errorResponse`, один обробник `nestErrorResponse`, перевірка JSON-запиту |
+| `src/lib/auth/auth-cookies.ts` | Читання та встановлення auth cookies на сервері |
 | `src/lib/api/`, `src/lib/auth/` | Спільна серверна API/auth infrastructure за конкретної потреби |
 | `src/modules/<feature>/api/` | Браузерні API-функції; серверні feature-функції лише за конкретної потреби |
 | `src/modules/<feature>/hooks/` | React Query hooks відповідної функціональності |
@@ -159,6 +161,8 @@ Module повинен максимально володіти своїм код�
 Для простого endpoint Handler може напряму імпортувати спільний server-only Nest client із `lib/api/`. Файл серверної обгортки в `modules/<feature>/api/` не є обов'язковим. Критерії його появи та розподіл обробки помилок визначені в [AUTH_FLOW.md](./AUTH_FLOW.md#відповідальності-api-шарів-і-помилки). Наявні змістовні серверні функції, зокрема спільну login/register логіку, не видаляємо лише заради уніфікації структури.
 
 Query keys належать feature: ключ єдиного запиту може бути поряд із hook; спільні ключі кількох споживачів — у `modules/<feature>/query-keys.ts` за потреби. Не створюємо цей файл або factory ключів наперед. Схема, яку використовує лише одна API-функція, також може залишатися поряд із нею; окремі файли потрібні для зрозумілого розміщення чи повторного використання, а не для заповнення дерева директорій.
+
+Рефакторинг від 2026-10-14 не додає нового шару: request interceptor залишається в `nest-api.ts`, а спільний обробник винятків — у `bff-http.ts`. Окремий `requestErrorResponse` та файл `nest-error.schema.ts` не потрібні. Погоджений flow і межі довіри до Nest визначені тільки в [AUTH_FLOW.md](./AUTH_FLOW.md#погоджений-простий-flow-від-2026-10-14).
 
 ---
 
