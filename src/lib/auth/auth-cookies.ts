@@ -2,6 +2,10 @@ import 'server-only'
 
 import type { NextResponse } from 'next/server'
 import { type AuthCredentials } from './auth-credentials.schema'
+import { cookies } from 'next/headers'
+
+const HOST_SC_ACCESS = '__Host-sc-access' as const
+const SC_ACCESS = 'sc-access' as const
 
 export function setAuthCookies(
   response: NextResponse,
@@ -18,7 +22,7 @@ export function setAuthCookies(
   }
 
   response.cookies.set(
-    secure ? '__Host-sc-access' : 'sc-access',
+    secure ? HOST_SC_ACCESS : SC_ACCESS,
     credentials.accessToken,
     options,
   )
@@ -28,4 +32,12 @@ export function setAuthCookies(
     credentials.refreshToken,
     options,
   )
+}
+
+export async function getAccessToken() {
+  const secure = process.env.NODE_ENV === 'production'
+
+  const cookie = await cookies()
+
+  return cookie.get(secure ? HOST_SC_ACCESS : SC_ACCESS)?.value
 }
