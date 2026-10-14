@@ -1,21 +1,11 @@
 import { errorResponse, successResponse } from '@/lib/api/bff-http'
-import { getAccessToken } from '@/lib/auth/auth-cookies'
-import { api } from '@/lib/api/nest-api'
+import { api, MissingAccessTokenError } from '@/lib/api/nest-api'
 import { userSchema } from '@/modules/users/schemas/user.schema'
 import { nestErrorSchema } from '@/lib/api/nest-error.schema'
 
 export async function GET() {
   try {
-    const accessToken = await getAccessToken()
-
-    if (!accessToken || !accessToken.trim()) {
-      return errorResponse(401, 'Потрібно увійти в акаунт.')
-    }
-
     const response = await api.get<unknown>('/users/me', {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
       validateStatus: () => true,
     })
 
@@ -43,7 +33,11 @@ export async function GET() {
     }
 
     return successResponse(validatedUser.data)
-  } catch {
-    return errorResponse(500, 'Не вдалося отримати інформація про користувача')
+  } catch (error) {
+    if (error instanceof MissingAccessTokenError) {
+      return errorResponse(401, error.message)
+    }
+
+    return errorResponse(500, 'Не вдалося отримати інформацію про користувача.')
   }
 }
