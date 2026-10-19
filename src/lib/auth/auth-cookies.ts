@@ -5,7 +5,10 @@ import { type AuthCredentials } from './auth-credentials.schema'
 import { cookies } from 'next/headers'
 
 const HOST_SC_ACCESS = '__Host-sc-access' as const
+const HOST_SC_REFRESH = '__Host-sc-refresh' as const
+
 const SC_ACCESS = 'sc-access' as const
+const SC_REFRESH = 'sc-refresh' as const
 
 export function setAuthCookies(
   response: NextResponse,
@@ -28,7 +31,7 @@ export function setAuthCookies(
   )
 
   response.cookies.set(
-    secure ? '__Host-sc-refresh' : 'sc-refresh',
+    secure ? HOST_SC_REFRESH : SC_REFRESH,
     credentials.refreshToken,
     options,
   )
@@ -47,13 +50,17 @@ export function clearAuthCookies(response: NextResponse) {
 
   response.cookies.set(secure ? HOST_SC_ACCESS : SC_ACCESS, '', options)
 
-  response.cookies.set(secure ? '__Host-sc-refresh' : 'sc-refresh', '', options)
+  response.cookies.set(secure ? HOST_SC_REFRESH : SC_REFRESH, '', options)
 }
 
-export async function getAccessToken() {
+export async function getUserToken(
+  tokenType: 'access' | 'refresh',
+): Promise<string | undefined> {
   const secure = process.env.NODE_ENV === 'production'
 
   const cookie = await cookies()
 
-  return cookie.get(secure ? HOST_SC_ACCESS : SC_ACCESS)?.value
+  return tokenType === 'access'
+    ? cookie.get(secure ? HOST_SC_ACCESS : SC_ACCESS)?.value
+    : cookie.get(secure ? HOST_SC_REFRESH : SC_REFRESH)?.value
 }

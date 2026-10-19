@@ -2,7 +2,7 @@ import 'server-only'
 
 import axios from 'axios'
 import { serverEnv } from '@/lib/env/server'
-import { getAccessToken } from '@/lib/auth/auth-cookies'
+import { getUserToken } from '@/lib/auth/auth-cookies'
 
 const PUBLIC_URLS = [
   '/auth/login',
@@ -36,7 +36,7 @@ api.interceptors.request.use(async (config) => {
     return config
   }
 
-  const accessToken = await getAccessToken()
+  const accessToken = await getUserToken('access')
 
   if (!accessToken || !accessToken.trim()) {
     throw new MissingAccessTokenError()
