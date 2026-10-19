@@ -34,6 +34,22 @@ export function setAuthCookies(
   )
 }
 
+export function clearAuthCookies(response: NextResponse) {
+  const secure = process.env.NODE_ENV === 'production'
+
+  const options = {
+    httpOnly: true,
+    secure,
+    sameSite: 'lax' as const,
+    path: '/',
+    maxAge: 0,
+  }
+
+  response.cookies.set(secure ? HOST_SC_ACCESS : SC_ACCESS, '', options)
+
+  response.cookies.set(secure ? '__Host-sc-refresh' : 'sc-refresh', '', options)
+}
+
 export async function getAccessToken() {
   const secure = process.env.NODE_ENV === 'production'
 
