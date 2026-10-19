@@ -3,6 +3,7 @@ import 'client-only'
 import type { LoginInput } from '../schemas/login.schema'
 import { bffApi } from '@/lib/api/bff-api'
 import { authResponseSchema } from '@/modules/auth/schemas/auth-response.schema'
+import { GET_RESPONSE_ERROR } from '@/constants/api.constants'
 
 export async function login(input: LoginInput): Promise<null> {
   const response = await bffApi
@@ -10,9 +11,7 @@ export async function login(input: LoginInput): Promise<null> {
       validateStatus: () => true,
     })
     .catch(() => {
-      throw new Error(
-        'Не вдалося отримати відповідь сервера. Спробуйте пізніше.',
-      )
+      throw new Error(GET_RESPONSE_ERROR)
     })
 
   const result = authResponseSchema.safeParse(response.data)
