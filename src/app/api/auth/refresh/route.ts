@@ -1,4 +1,8 @@
-import { errorResponse, successResponse } from '@/lib/api/bff-http'
+import {
+  errorResponse,
+  nestErrorResponse,
+  successResponse,
+} from '@/lib/api/bff-http'
 import {
   clearAuthCookies,
   getUserToken,
@@ -6,6 +10,7 @@ import {
 } from '@/lib/auth/auth-cookies'
 import { api } from '@/lib/api/nest-api'
 import { parseAuthCredentials } from '@/modules/auth/api/parse-auth-credentials'
+import axios from 'axios'
 
 export async function POST(request: Request) {
   try {
@@ -38,12 +43,18 @@ export async function POST(request: Request) {
     setAuthCookies(response, result.data)
 
     return response
-  } catch {
-    console.error({
-      operation: 'auth.refresh.route',
-      errorType: 'unexpected-error',
-    })
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      const response = errorResponse(
+        401,
+        'Сесію не вдалося відновити. Увійдіть знову.',
+      )
 
-    return errorResponse(500, 'Не вдалося оновити сесію. Спробуйте пізніше.')
+      clearAuthCookies(response)
+
+      return response
+    }
+
+    return nestErrorResponse(error)
   }
 }
