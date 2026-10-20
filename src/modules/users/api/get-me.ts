@@ -4,8 +4,9 @@ import { bffApi } from '@/lib/api/bff-api'
 import type { ApiResponse } from '@/types/api-types'
 import { DEFAULT_SERVER_ERROR_MESSAGE } from '@/constants/api.constants'
 import { BffError } from '@/lib/api/bff-error'
+import { readWithSessionRecovery } from '@/lib/auth/session-recovery'
 
-export async function getMe(): Promise<User> {
+async function requestMe(): Promise<User> {
   const response = await bffApi
     .get<ApiResponse<User>>('/users/me', { validateStatus: () => true })
     .catch(() => {
@@ -17,4 +18,8 @@ export async function getMe(): Promise<User> {
   }
 
   return response.data.data
+}
+
+export function getMe(): Promise<User> {
+  return readWithSessionRecovery(requestMe)
 }

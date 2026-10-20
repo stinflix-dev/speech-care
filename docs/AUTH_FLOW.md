@@ -100,7 +100,7 @@ Nest залишається джерелом остаточного рішенн
 
 Не дублюємо бізнес-авторизацію в кожному Route Handler. Спільні механізми читання credentials, авторизованого виклику Nest і обробки транспортних помилок належать server-only API layer; валідація та HTTP-відповідь конкретного endpoint залишаються на його HTTP-межі.
 
-У поточній реалізації request interceptor у `nest-api.ts` читає access cookie для кожного захищеного виклику та встановлює Bearer лише в headers цього запиту. Винятки — точні POST `/auth/login`, `/auth/register`, `/auth/refresh`, `/auth/logout`, а не весь префікс `/auth`. Відсутність токена дає `MissingAccessTokenError`; наявність токена не доводить його чинність. Автоматичного refresh інтерцептор поки не виконує; це наступний етап після завершення `/users/me` до UI.
+У поточній реалізації request interceptor у `nest-api.ts` читає access cookie для кожного захищеного виклику та встановлює Bearer лише в headers цього запиту. Винятки — точні POST `/auth/login`, `/auth/register`, `/auth/refresh`, `/auth/logout`, а не весь префікс `/auth`. Відсутність токена дає `MissingAccessTokenError`; наявність токена не доводить його чинність. Сам інтерцептор не виконує автоматичного refresh. Станом на 2026-10-20 браузерний getMe підключений до readWithSessionRecovery, а оновлення cookies виконує POST /api/auth/refresh. Стан перевірок і відкриті питання координації — у PROGRESS.md.
 
 ### Refresh і logout
 
@@ -169,3 +169,10 @@ Route Handlers залишаються компактними: HTTP-вхід, в�
 - [TanStack Query: інвалідація після mutations](https://tanstack.com/query/latest/docs/framework/react/guides/invalidations-from-mutations).
 
 Вибір Route Handlers замість Server Actions для Nest API є обов'язковим рішенням цього проєкту, а не твердженням, що Next.js загалом забороняє інші підходи.
+
+
+## Навчальне продовження від 2026-10-20
+
+Наступна реалізація — Next logout. Після неї користувач просить окремий критичний аудит потрібності всіх auth-механізмів і пояснення теорії/коду. Поточний профіль не переносимо на SSR без конкретної потреби. Майбутнє розгортання Next на Vercel не є поточним завданням.
+
+Це уточнення порядку навчання, а не підтвердження всіх реалізаційних гарантій. Див. [PROGRESS.md](../../docs/learning/PROGRESS.md), [handoff logout](../../CONTINUE_PROMPT.md), [handoff аудиту](../../CONTINUE_AUTH_REVIEW.md) і [пояснювальну карту](../../docs/learning/AUTH_FLOW_EXPLAINED.md).

@@ -1,6 +1,6 @@
 'use client'
 
-import { Field, FieldLabel, FieldError } from '@/components/ui/field'
+import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
@@ -12,15 +12,21 @@ import {
 } from '@/modules/auth/schemas/register.schema'
 import { useRegister } from '@/modules/auth/hooks/use-register'
 import { getErrorMessage } from '@/lib/errors/get-error-message'
+import { useRouter } from 'next/navigation'
+import { useQueryClient } from '@tanstack/react-query'
+import { AppRoutes } from '@/constants/routes'
 
 export const RegisterForm = () => {
   const registration = useRegister()
+
+  const router = useRouter()
+  const queryClient = useQueryClient()
 
   const {
     register,
     handleSubmit,
     setError,
-    setValue,
+    reset,
     formState: { errors, isSubmitting, isSubmitSuccessful },
   } = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
@@ -35,7 +41,12 @@ export const RegisterForm = () => {
   async function onSubmit(input: RegisterInput) {
     try {
       await registration.mutateAsync(input)
-      setValue('password', '')
+      reset()
+
+      await queryClient.cancelQueries()
+      queryClient.removeQueries()
+
+      router.replace(AppRoutes.PROFILE)
     } catch (error) {
       setError('root.server', {
         type: 'server',

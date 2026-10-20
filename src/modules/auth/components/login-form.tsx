@@ -6,18 +6,24 @@ import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { loginSchema, type LoginInput } from '../schemas/login.schema'
+import { type LoginInput, loginSchema } from '../schemas/login.schema'
 import { useLogin } from '@/modules/auth/hooks/use-login'
 import { getErrorMessage } from '@/lib/errors/get-error-message'
+import { useRouter } from 'next/navigation'
+import { useQueryClient } from '@tanstack/react-query'
+import { AppRoutes } from '@/constants/routes'
 
 export function LoginForm() {
   const login = useLogin()
+
+  const router = useRouter()
+  const queryClient = useQueryClient()
 
   const {
     register,
     handleSubmit,
     setError,
-    setValue,
+    reset,
     formState: { errors, isSubmitting, isSubmitSuccessful },
   } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -30,7 +36,12 @@ export function LoginForm() {
   async function onSubmit(input: LoginInput) {
     try {
       await login.mutateAsync(input)
-      setValue('password', '')
+      reset()
+
+      await queryClient.cancelQueries()
+      queryClient.removeQueries()
+
+      router.replace(AppRoutes.PROFILE)
     } catch (error) {
       setError('root.server', {
         type: 'server',
