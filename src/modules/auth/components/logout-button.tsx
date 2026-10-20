@@ -11,9 +11,6 @@ export function LogoutButton() {
   return (
     <div className="flex flex-col gap-2">
       <Button
-        type="button"
-        variant="outline"
-        className="w-full"
         disabled={busy}
         aria-busy={logout.isPending}
         onClick={() => logout.mutate()}

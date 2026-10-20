@@ -3,11 +3,10 @@ import { getMe } from '@/modules/users/api/get-me'
 
 export const GET_ME_QUERY_KEYS = ['getMe'] as const
 
-export const useGetMe = (refetchOnMount: boolean | 'always' = true) => {
+export const useGetMe = () => {
   return useQuery({
     queryKey: GET_ME_QUERY_KEYS,
-    queryFn: getMe,
+    queryFn: ({ signal }) => getMe(signal),
     retry: false,
-    refetchOnMount,
   })
 }

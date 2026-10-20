@@ -14,10 +14,10 @@ export const CurrentUser = () => {
   if (isError) {
     return (
       <div className="flex flex-col items-center gap-y-3">
-        <h2 className="text-2xl font-medium text-gray-800">
+        <h2 className="text-2xl font-medium text-foreground">
           Не вдалося завантажити профіль. Спробуйте пізніше
         </h2>
-        <p className="text-sm text-red-500">{error.message}</p>
+        <p className="text-sm text-destructive">{error.message}</p>
         <Button onClick={() => window.location.reload()}>
           Оновити сторінку
         </Button>

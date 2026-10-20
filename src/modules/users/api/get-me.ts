@@ -6,10 +6,14 @@ import { DEFAULT_SERVER_ERROR_MESSAGE } from '@/constants/api.constants'
 import { BffError } from '@/lib/api/bff-error'
 import { readWithSessionRecovery } from '@/lib/auth/session-recovery'
 
-async function requestMe(): Promise<User> {
+async function requestMe(signal?: AbortSignal): Promise<User> {
   const response = await bffApi
-    .get<ApiResponse<User>>('/users/me', { validateStatus: () => true })
+    .get<ApiResponse<User>>('/users/me', {
+      validateStatus: () => true,
+      ...(signal ? { signal } : {}),
+    })
     .catch(() => {
+      signal?.throwIfAborted()
       throw new Error(DEFAULT_SERVER_ERROR_MESSAGE)
     })
 
@@ -20,6 +24,6 @@ async function requestMe(): Promise<User> {
   return response.data.data
 }
 
-export function getMe(): Promise<User> {
-  return readWithSessionRecovery(requestMe)
+export function getMe(signal?: AbortSignal): Promise<User> {
+  return readWithSessionRecovery(() => requestMe(signal), signal)
 }

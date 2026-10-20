@@ -39,14 +39,21 @@ export function resetSessionRecovery() {
 
 export async function withSessionLock<T>(
   operation: () => Promise<T>,
+  signal?: AbortSignal,
 ): Promise<T> {
+  signal?.throwIfAborted()
+
   if (!navigator.locks) {
     throw new Error(
       'Для роботи із сесією потрібен сучасний браузер із підтримкою Web Locks.',
     )
   }
 
-  return navigator.locks.request(SESSION_LOCK, operation)
+  return navigator.locks.request(
+    SESSION_LOCK,
+    signal ? { signal } : {},
+    operation,
+  )
 }
 
 export function expireSessionRecovery() {
@@ -74,7 +81,10 @@ export function subscribeToSessionExpiry(onExpired: () => void) {
 // Використовуємо тільки для читання, яке безпечно повторювати.
 export async function readWithSessionRecovery<T>(
   read: () => Promise<T>,
+  signal?: AbortSignal,
 ): Promise<T> {
+  signal?.throwIfAborted()
+
   try {
     return await read()
   } catch (error) {
@@ -82,12 +92,16 @@ export async function readWithSessionRecovery<T>(
   }
 
   return withSessionLock(async () => {
+    signal?.throwIfAborted()
+
     // Перевіряємо актуальні cookies після очікування іншої вкладки.
     try {
       return await read()
     } catch (error) {
       if (!isUnauthorized(error)) throw error
     }
+
+    signal?.throwIfAborted()
 
     const state = readRecoveryState()
 
@@ -108,12 +122,20 @@ export async function readWithSessionRecovery<T>(
     } catch (error) {
       if (isUnauthorized(error)) {
         writeRecoveryState('expired')
+      } else if (
+        error instanceof BffError &&
+        (error.status === 403 || error.status === 429)
+      ) {
+        // Our BFF/Nest guards reject these requests before rotation starts.
+        resetSessionRecovery()
       }
 
       throw error
     }
 
     resetSessionRecovery()
+    // Do not cancel an issued refresh: first settle its result and marker.
+    signal?.throwIfAborted()
 
     // Після успішного refresh повторюємо читання лише один раз.
     try {
@@ -125,5 +147,5 @@ export async function readWithSessionRecovery<T>(
 
       throw error
     }
-  })
+  }, signal)
 }

@@ -1,0 +1,138 @@
+/* Спільні токени для shadcn/ui та власних компонентів застосунку. */
+@theme inline {
+  /* ========================================
+     GLOBAL / SHADCN — поверхні, стани та межі
+     ======================================== */
+  --color-background: var(--background);
+  --color-card: var(--card);
+  --color-popover: var(--popover);
+  --color-secondary: var(--secondary);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* ========================================
+     TEXT — основний, допоміжний та текст на поверхнях
+     ======================================== */
+  --color-foreground: var(--foreground);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent-foreground: var(--accent-foreground);
+
+  /* ========================================
+     BRAND — primary та його стани, без дублюючого brand
+     ======================================== */
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-active: var(--primary-active);
+
+  /* ========================================
+     CHARTS — стандартні кольори графіків shadcn
+     ======================================== */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* ========================================
+     Радіуси — без змін
+     ======================================== */
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  /* ========================================
+     GLOBAL / SHADCN — поверхні, стани та межі
+     ======================================== */
+  --background: #f5f7f6;
+  --card: #ffffff;
+  --popover: var(--card);
+  --secondary: #e8f4ec;
+  --muted: #f0f4f2;
+  --accent: #f1f9f4;
+  --destructive: #b42318;
+  --border: #e4eae6;
+  --input: var(--border);
+  --ring: var(--primary);
+
+  /* ========================================
+     TEXT — основний, допоміжний та текст на поверхнях
+     ======================================== */
+  --foreground: #20272b;
+  --card-foreground: var(--foreground);
+  --popover-foreground: var(--foreground);
+  --secondary-foreground: var(--primary-active);
+  --muted-foreground: #62716b;
+  --accent-foreground: var(--primary-active);
+
+  /* ========================================
+     BRAND — primary та його стани, без дублюючого brand
+     ======================================== */
+  --primary: #16804a;
+  --primary-foreground: #ffffff;
+  --primary-hover: #0f683b;
+  --primary-active: #0b5935;
+
+  /* ========================================
+     CHARTS — стандартні кольори графіків shadcn
+     ======================================== */
+  --chart-1: var(--primary);
+  --chart-2: #175cd3;
+  --chart-3: #b54708;
+  --chart-4: #56a78f;
+  --chart-5: #64748b;
+
+  /* ========================================
+     Радіуси — без змін
+     ======================================== */
+  --radius: 0.625rem;
+}
+
+/* BRAND успадковується з :root: зелені кнопки в обох темах. */
+.dark {
+  /* ========================================
+     GLOBAL / SHADCN — поверхні, стани та межі
+     ======================================== */
+  --background: #151e19;
+  --card: #202d24;
+  --popover: var(--card);
+  --secondary: #203b2c;
+  --muted: #26342b;
+  --accent: #244333;
+  --destructive: #f97066;
+  --border: #384a3e;
+  --input: #405345;
+  --ring: var(--muted-foreground);
+
+  /* ========================================
+     TEXT — основний, допоміжний та текст на поверхнях
+     ======================================== */
+  --foreground: #eff6f1;
+  --card-foreground: var(--foreground);
+  --popover-foreground: var(--foreground);
+  --secondary-foreground: #ddf7e6;
+  --muted-foreground: #b0c0b6;
+  --accent-foreground: #e2f6e9;
+
+  /* ========================================
+     CHARTS — стандартні кольори графіків shadcn
+     ======================================== */
+  --chart-1: #34b475;
+  --chart-2: #73a9ff;
+  --chart-3: #f2b65c;
+  --chart-4: #72c6a0;
+  --chart-5: #aab7ad;
+}

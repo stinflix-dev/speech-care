@@ -53,11 +53,13 @@ export function LoginForm() {
   }
 
   return (
-    <div className="w-full max-w-md rounded-lg border p-6 shadow-sm">
-      <h1 className="mb-6 text-center text-2xl font-semibold">
-        Вхід до облікового запису
-      </h1>
-
+    <div className="w-full max-w-md rounded-lg border border-border bg-card p-6 text-card-foreground">
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold">З поверненням!</h2>
+        <p className="text-sm text-muted-foreground">
+          Увійдіть до свого облікового запису
+        </p>
+      </div>
       <form
         noValidate
         onSubmit={(event) => {
@@ -77,6 +79,7 @@ export function LoginForm() {
             readOnly={isSubmitting || isSubmitSuccessful}
             aria-invalid={Boolean(errors.email)}
             aria-describedby={errors.email ? 'login-email-error' : undefined}
+            className="border-input bg-background text-foreground"
           />
 
           {errors.email && (
@@ -99,6 +102,7 @@ export function LoginForm() {
             aria-describedby={
               errors.password ? 'login-password-error' : undefined
             }
+            className="border-input bg-background text-foreground"
           />
 
           {errors.password && (
@@ -119,9 +123,12 @@ export function LoginForm() {
         </Button>
       </form>
 
-      <p className="mt-5 text-center text-sm">
+      <p className="mt-5 text-center text-sm text-muted-foreground">
         Немає облікового запису?{' '}
-        <Link href="/register" className="underline">
+        <Link
+          href="/register"
+          className="text-foreground underline underline-offset-2 hover:opacity-80"
+        >
           Зареєструватися
         </Link>
       </p>

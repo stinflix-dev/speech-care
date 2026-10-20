@@ -1,5 +1,6 @@
 import {
   errorResponse,
+  nestErrorResponse,
   readSameOriginJson,
   successResponse,
 } from '@/lib/api/bff-http'
@@ -25,25 +26,14 @@ export async function POST(request: Request) {
     })
 
     if (!result.success) {
-      const response = errorResponse(result.status, result.message)
-
-      if (result.retryAfter) {
-        response.headers.set('Retry-After', result.retryAfter)
-      }
-
-      return response
+      return errorResponse(result.status, result.message)
     }
 
     const response = successResponse(null, 201)
     setAuthCookies(response, result.data)
 
     return response
-  } catch {
-    console.error({
-      operation: 'auth.register.route',
-      errorType: 'unexpected-error',
-    })
-
-    return errorResponse(500, 'Не вдалося виконати реєстрацію.')
+  } catch (error) {
+    return nestErrorResponse(error)
   }
 }

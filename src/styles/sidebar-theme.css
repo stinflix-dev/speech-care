@@ -1,0 +1,34 @@
+/* ========================================
+   SIDEBAR — навігаційна панель
+   primary — активний пункт; accent — наведення.
+   ======================================== */
+@theme inline {
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-inactive: var(--sidebar-inactive);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+/* Однакова темно-зелена палітра у світлій і темній темах. */
+:root {
+  --sidebar: #0b3524;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #1b6e45;
+  --sidebar-primary-foreground: var(--sidebar-foreground);
+  --sidebar-accent: #164d35;
+  --sidebar-accent-foreground: var(--sidebar-foreground);
+  --sidebar-inactive: #d6eadd;
+  --sidebar-border: #2d5943;
+  --sidebar-ring: var(--sidebar-inactive);
+}
+
+/* Читабельні помилки та focus на темному фоні. */
+.sidebar-theme {
+  --destructive: #f97066;
+  --ring: var(--sidebar-ring);
+}

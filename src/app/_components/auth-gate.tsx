@@ -17,7 +17,7 @@ type AuthGateProps = {
 export function AuthGate({ mode, children }: AuthGateProps) {
   const router = useRouter()
   const queryClient = useQueryClient()
-  const query = useGetMe('always')
+  const query = useGetMe()
 
   useEffect(() => {
     return subscribeToSessionExpiry(() => {
@@ -30,8 +30,9 @@ export function AuthGate({ mode, children }: AuthGateProps) {
     query.error instanceof BffError &&
     query.error.status === 401
 
-  const checking = query.isPending || query.isFetching
-  const ready = !checking && !query.isPaused
+  // A failed guest check has no data; its refetch is pending again.
+  const checking = !query.isFetched
+  const ready = !checking && !query.isFetching && !query.isPaused
 
   let destination: Route | null = null
 
@@ -49,23 +50,16 @@ export function AuthGate({ mode, children }: AuthGateProps) {
     }
   }, [destination, router])
 
-  if (query.isPaused) {
-    return (
-      <div>
-        <p>Перевірка сесії очікує підключення до мережі.</p>
-        {mode === 'guest' ? children : null}
-      </div>
-    )
-  }
-
-  if (checking || destination) {
+  if (destination || (checking && !query.isPaused)) {
     return <div>Перевіряємо сесію...</div>
   }
 
   if (mode === 'guest') {
     return (
       <>
-        {query.isError && !unauthorized ? (
+        {query.isPaused ? (
+          <p role="status">Перевірка сесії очікує підключення до мережі.</p>
+        ) : query.isError && !unauthorized ? (
           <p role="status">
             Не вдалося перевірити сесію. Можна спробувати увійти знову.
           </p>
@@ -73,6 +67,10 @@ export function AuthGate({ mode, children }: AuthGateProps) {
         {children}
       </>
     )
+  }
+
+  if (query.isPaused && !query.data) {
+    return <p>Перевірка сесії очікує підключення до мережі.</p>
   }
 
   if (query.isError) {
@@ -85,6 +83,10 @@ export function AuthGate({ mode, children }: AuthGateProps) {
         <Link href="/login">Перейти до входу</Link>
       </div>
     )
+  }
+
+  if (!query.data) {
+    return <div>Перевіряємо сесію...</div>
   }
 
   return children

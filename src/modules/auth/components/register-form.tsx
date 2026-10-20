@@ -58,8 +58,8 @@ export const RegisterForm = () => {
   }
 
   return (
-    <div className="flex flex-col gap-y-6 rounded-lg border border-gray-200 px-6 py-8 shadow-md">
-      <h1 className="text-center text-2xl font-semibold text-gray-800">
+    <div className="flex flex-col gap-y-6 rounded-lg border border-border bg-card px-6 py-8 text-card-foreground shadow-md">
+      <h1 className="text-center text-2xl font-semibold text-foreground">
         Створення облікового запису
       </h1>
       <form
@@ -77,6 +77,7 @@ export const RegisterForm = () => {
               {...register('firstName')}
               id="register-first-name"
               type="text"
+              className="border-input bg-background text-foreground"
               autoComplete="given-name"
               readOnly={isSubmitting || isSubmitSuccessful}
               aria-invalid={Boolean(errors.firstName)}
@@ -97,6 +98,7 @@ export const RegisterForm = () => {
               {...register('lastName')}
               id="register-last-name"
               type="text"
+              className="border-input bg-background text-foreground"
               autoComplete="family-name"
               readOnly={isSubmitting || isSubmitSuccessful}
               aria-invalid={Boolean(errors.lastName)}
@@ -118,6 +120,7 @@ export const RegisterForm = () => {
             {...register('email')}
             id="register-email"
             type="email"
+            className="border-input bg-background text-foreground"
             autoComplete="username"
             readOnly={isSubmitting || isSubmitSuccessful}
             aria-invalid={Boolean(errors.email)}
@@ -136,6 +139,7 @@ export const RegisterForm = () => {
             {...register('password')}
             id="register-password"
             type="password"
+            className="border-input bg-background text-foreground"
             autoComplete="new-password"
             readOnly={isSubmitting || isSubmitSuccessful}
             aria-invalid={Boolean(errors.password)}
@@ -167,11 +171,11 @@ export const RegisterForm = () => {
         </Button>
       </form>
       <div>
-        <h2 className="text-center">
+        <h2 className="text-center text-muted-foreground">
           Вже маєте обліковий запис?{' '}
           <Link
             href="/login"
-            className="text-blue-800 underline-offset-2 hover:underline"
+            className="text-foreground underline-offset-2 hover:underline"
           >
             Увійти
           </Link>

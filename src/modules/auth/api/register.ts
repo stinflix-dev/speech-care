@@ -1,12 +1,13 @@
 import 'client-only'
 
 import { bffApi } from '@/lib/api/bff-api'
-import { authResponseSchema } from '../schemas/auth-response.schema'
 import type { RegisterInput } from '../schemas/register.schema'
+import type { ApiResponse } from '@/types/api-types'
+import { BffError } from '@/lib/api/bff-error'
 
 export async function register(input: RegisterInput): Promise<null> {
   const response = await bffApi
-    .post<unknown>('/auth/register', input, {
+    .post<ApiResponse<null>>('/auth/register', input, {
       validateStatus: () => true,
     })
     .catch(() => {
@@ -15,19 +16,9 @@ export async function register(input: RegisterInput): Promise<null> {
       )
     })
 
-  const result = authResponseSchema.safeParse(response.data)
-
-  if (!result.success) {
-    throw new Error('Отримано некоректну відповідь сервера.')
+  if (!response.data.success) {
+    throw new BffError(response.data.message, response.status)
   }
 
-  if (response.status === 201 && result.data.success) {
-    return result.data.data
-  }
-
-  if (response.status >= 400 && !result.data.success) {
-    throw new Error(result.data.message)
-  }
-
-  throw new Error('Отримано некоректну відповідь сервера.')
+  return response.data.data
 }

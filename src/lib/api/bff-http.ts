@@ -53,7 +53,18 @@ export function nestErrorResponse(error: unknown) {
           : null
 
     if (message?.trim()) {
-      return errorResponse(status, message)
+      const response = errorResponse(status, message)
+      const retryAfter: unknown = error.response.headers['retry-after']
+
+      if (
+        status === 429 &&
+        typeof retryAfter === 'string' &&
+        /^\d{1,6}$/.test(retryAfter)
+      ) {
+        response.headers.set('Retry-After', retryAfter)
+      }
+
+      return response
     }
   }
 

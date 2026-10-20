@@ -5,7 +5,7 @@ export default function AuthLayout({
   children,
 }: Readonly<{ children: ReactNode }>) {
   return (
-    <main className="grid min-h-screen place-items-center">
+    <main className="auth-theme grid min-h-screen place-items-center bg-background text-foreground">
       <AuthGate mode="guest">{children}</AuthGate>
     </main>
   )

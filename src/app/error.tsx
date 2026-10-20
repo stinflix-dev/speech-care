@@ -18,9 +18,9 @@ const ErrorPage = ({ error }: ErrorPageProps) => {
 
   return (
     <main>
-      <h1 className="text-white">Something went wrong</h1>
+      <h1 className="text-foreground">Something went wrong</h1>
 
-      <p className="font-medium text-red-500">{errorMessage}</p>
+      <p className="font-medium text-destructive">{errorMessage}</p>
       <div>
         <Link href="/">Back to home</Link>
         <button onClick={() => window.location.reload()}>Reload page</button>

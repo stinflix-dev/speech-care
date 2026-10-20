@@ -1,0 +1,33 @@
+/* ========================================
+   AUTH — Login / Register
+   Лише градієнт має власні токени. Решта — локальна тема shadcn.
+   ======================================== */
+@theme inline {
+  --color-auth-gradient-from: var(--auth-gradient-from);
+  --color-auth-gradient-to: var(--auth-gradient-to);
+}
+
+:root {
+  --auth-gradient-from: #0a6236;
+  --auth-gradient-to: #177044;
+}
+
+/* Темне оформлення незалежно від глобальної .dark. */
+.auth-theme {
+  --background: #242628;
+  --foreground: #ffffff;
+  --card: #2a2b2d;
+  --card-foreground: var(--foreground);
+  --popover: var(--card);
+  --popover-foreground: var(--foreground);
+  --secondary: var(--background);
+  --secondary-foreground: var(--foreground);
+  --muted: var(--background);
+  --muted-foreground: #b7beba;
+  --accent: var(--background);
+  --accent-foreground: var(--foreground);
+  --destructive: #f97066;
+  --border: #434749;
+  --input: var(--border);
+  --ring: var(--muted-foreground);
+}
