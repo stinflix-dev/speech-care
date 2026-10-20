@@ -2,17 +2,18 @@ import 'client-only'
 import type { User } from '@/modules/users/schemas/user.schema'
 import { bffApi } from '@/lib/api/bff-api'
 import type { ApiResponse } from '@/types/api-types'
-import { GET_RESPONSE_ERROR } from '@/constants/api.constants'
+import { DEFAULT_SERVER_ERROR_MESSAGE } from '@/constants/api.constants'
+import { BffError } from '@/lib/api/bff-error'
 
 export async function getMe(): Promise<User> {
   const response = await bffApi
     .get<ApiResponse<User>>('/users/me', { validateStatus: () => true })
     .catch(() => {
-      throw new Error(GET_RESPONSE_ERROR)
+      throw new Error(DEFAULT_SERVER_ERROR_MESSAGE)
     })
 
   if (!response.data.success) {
-    throw new Error(response.data.message)
+    throw new BffError(response.data.message, response.status)
   }
 
   return response.data.data

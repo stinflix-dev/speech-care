@@ -3,7 +3,7 @@ import 'client-only'
 import type { LoginInput } from '../schemas/login.schema'
 import { bffApi } from '@/lib/api/bff-api'
 import { authResponseSchema } from '@/modules/auth/schemas/auth-response.schema'
-import { GET_RESPONSE_ERROR } from '@/constants/api.constants'
+import { DEFAULT_SERVER_ERROR_MESSAGE } from '@/constants/api.constants'
 
 export async function login(input: LoginInput): Promise<null> {
   const response = await bffApi
@@ -11,7 +11,7 @@ export async function login(input: LoginInput): Promise<null> {
       validateStatus: () => true,
     })
     .catch(() => {
-      throw new Error(GET_RESPONSE_ERROR)
+      throw new Error(DEFAULT_SERVER_ERROR_MESSAGE)
     })
 
   const result = authResponseSchema.safeParse(response.data)
