@@ -2,21 +2,10 @@ import 'server-only'
 
 import axios from 'axios'
 import { api } from '@/lib/api/nest-api'
-import {
-  type AuthCredentials,
-  authCredentialsSchema,
-} from '@/lib/auth/auth-credentials.schema'
 import type { LoginInput } from '../schemas/login.schema'
 import type { RegisterInput } from '../schemas/register.schema'
-
-type AuthFailure = {
-  success: false
-  status: number
-  message: string
-  retryAfter?: string
-}
-
-type AuthResult = { success: true; data: AuthCredentials } | AuthFailure
+import type { AuthFailure, AuthResult } from '../types/api-types'
+import { parseAuthCredentials } from '@/modules/auth/api/parse-auth-credentials'
 
 type AuthInput =
   | { action: 'login'; input: LoginInput }
@@ -88,33 +77,7 @@ export async function requestAuthCredentials({
       }
     }
 
-    const credentials = authCredentialsSchema.safeParse(response.data)
-
-    const expiresAt = credentials.success
-      ? Date.parse(credentials.data.sessionExpiresAt)
-      : Number.NaN
-
-    if (
-      !credentials.success ||
-      !Number.isFinite(expiresAt) ||
-      expiresAt <= Date.now()
-    ) {
-      console.error({
-        operation,
-        errorType: 'invalid-credentials-response',
-      })
-
-      return {
-        success: false,
-        status: 502,
-        message: 'Сервіс автентифікації повернув некоректну відповідь.',
-      }
-    }
-
-    return {
-      success: true,
-      data: credentials.data,
-    }
+    return parseAuthCredentials(response.data)
   } catch (error) {
     const isAxiosError = axios.isAxiosError(error)
     const isTimeout =
